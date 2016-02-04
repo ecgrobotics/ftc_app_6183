@@ -21,8 +21,8 @@ public class TeleOpCommands extends OpMode {
     public static int RIGHT=1;
     public static int LEFT=1;
     public static int SWEEPER=2;
-    public static double TRAYLEFT=.2;
-    public static double LEFTLEVEL=.5;
+    public static double TRAYLEFT=.15;
+    public static double LEFTLEVEL=.6;
     public static double TRAYRIGHT=.9;
     public static double RIGHTLEVEL=.5;
     public static double TRAYDELTA=.01;
@@ -132,11 +132,11 @@ public class TeleOpCommands extends OpMode {
     }
     public void setWinchPower(){
         if(gamepad2.a && winchwheelMC.getMotorPower(WINCH)!=1){
-            winchwheelMC.setMotorPower(WINCH,1);
+            winchwheelMC.setMotorPower(WINCH,-1);
           winchwheelMC.setMotorPower(WINCHWHEEL, .2);
             UPDATES+=1;
         } else if(gamepad2.b && winchwheelMC.getMotorPower(WINCH)!=-1){
-            winchwheelMC.setMotorPower(WINCH, -1);
+            winchwheelMC.setMotorPower(WINCH, 1);
            winchwheelMC.setMotorPower(WINCHWHEEL,-1);
             UPDATES+=1;
         } else if(!gamepad2.a && !gamepad2.b && winchwheelMC.getMotorPower(WINCH)!=0){

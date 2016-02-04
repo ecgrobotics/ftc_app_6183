@@ -27,11 +27,17 @@ public class DucksAutonomous extends AutonomousCommands{
             telemetry.addData("lol", "lol");
         }
         waitForStart();
-
-        goForward(.5,2000);
-        turnRight(45,.5);
-        goForward(.5,3000);
-        turnRight(45,.5);
-        goForward(.3,10000);
+        sleep(500);
+        goForward(.8, 500);
+        sleep(300);
+        turnRight(40,.5);
+        sleep(200);
+        goForward(.8,2100);
+        sleep(200);
+        turnRight(85,.5);
+        sleep(300);
+        goForward(.8,1500);
+        leftsweepMC.setMotorPower(LEFT,0);
+        rightpivotMC.setMotorPower(RIGHT,0);
     }
 }
