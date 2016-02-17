@@ -29,10 +29,12 @@ public class DucksTeleOp extends TeleOpCommands {
         climbersLeft=hardwareMap.servo.get("climbersLeft");
         climbersRight=hardwareMap.servo.get("climbersRight");
         tray=hardwareMap.servo.get("tray");
+        plow=hardwareMap.servo.get("plow");
 
+        currentPosition=.5;
         tray.setPosition(.5);
-        climbersRight.setPosition(1);
-        climbersLeft.setPosition(.3);
+        climbersLeft.setPosition(.5);
+        climbersRight.setPosition(.5);
     }
 
     @Override
@@ -46,6 +48,7 @@ public class DucksTeleOp extends TeleOpCommands {
         setClimbersPosition();
         setSweeperPower();
         setTrayPosition();
+        setPlowPosition();
 
         telemetry.addData("UPDATES", UPDATES);
         telemetry.addData("tray",tray.getPosition());

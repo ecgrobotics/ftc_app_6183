@@ -21,23 +21,17 @@ public class DucksAutonomous extends AutonomousCommands{
         winchwheelMC=hardwareMap.dcMotorController.get("winchwheelMC");
         leftsweepMC=hardwareMap.dcMotorController.get("leftsweepMC");
         rightpivotMC=hardwareMap.dcMotorController.get("rightpivotMC");
+        leftsweepMC.setMotorChannelMode(LEFT, DcMotorController.RunMode.RUN_USING_ENCODERS);
+        rightpivotMC.setMotorChannelMode(RIGHT, DcMotorController.RunMode.RUN_USING_ENCODERS);
         gyro=hardwareMap.gyroSensor.get("gyro");
         gyro.calibrate();
         while(gyro.isCalibrating()){
             telemetry.addData("lol", "lol");
         }
         waitForStart();
-        sleep(500);
-        goForward(.8, 500);
-        sleep(300);
-        turnRight(40,.5);
-        sleep(200);
-        goForward(.8,2100);
-        sleep(200);
-        turnRight(85,.5);
-        sleep(300);
-        goForward(.8,1500);
-        leftsweepMC.setMotorPower(LEFT,0);
-        rightpivotMC.setMotorPower(RIGHT,0);
+        encoderForward(60,.4);
+        stop();
+
+
     }
 }

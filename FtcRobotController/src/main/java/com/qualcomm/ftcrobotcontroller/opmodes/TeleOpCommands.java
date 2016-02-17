@@ -24,11 +24,11 @@ public class TeleOpCommands extends OpMode {
     public static double TRAYLEFT=.15;
     public static double LEFTLEVEL=.6;
     public static double TRAYRIGHT=.9;
-    public static double RIGHTLEVEL=.5;
-    public static double TRAYDELTA=.01;
+    public static double RIGHTLEVEL=.4;
+    public static double TRAYDELTA=.005 ;
     public static double TRAYMARGIN=.03;
     double targetPosition;
-    double currentPosition;
+    public double currentPosition;
     public int UPDATES=0;
     public GyroSensor gyro;
     public DcMotorController leftsweepMC;
@@ -37,6 +37,9 @@ public class TeleOpCommands extends OpMode {
     public Servo climbersLeft;
     public Servo climbersRight;
     public Servo tray;
+    public Servo plow;
+    public static double PLOWDOWN=0;
+    public static double PLOWUP=.8;
     public long LEFTUPDATE=0;
     public long RIGHTUPDATE=0;
 
@@ -71,37 +74,48 @@ public class TeleOpCommands extends OpMode {
         return dScale;
     }
     public void setSweeperPower(){
-        if(gamepad2.right_bumper && leftsweepMC.getMotorPower(SWEEPER)!=-1){
+        if(gamepad2.dpad_down && leftsweepMC.getMotorPower(SWEEPER)!=-1){
             leftsweepMC.setMotorPower(SWEEPER,-1);
             UPDATES+=1;
-        } else if (gamepad2.left_bumper && leftsweepMC.getMotorPower(SWEEPER)!=1) {
+        } else if (gamepad2.dpad_up && leftsweepMC.getMotorPower(SWEEPER)!=1) {
             leftsweepMC.setMotorPower(SWEEPER,1);
             UPDATES+=1;
-        }else if(gamepad2.left_stick_button && leftsweepMC.getMotorPower(SWEEPER)!=0){
+        }else if(gamepad2.dpad_right && leftsweepMC.getMotorPower(SWEEPER)!=0){
             leftsweepMC.setMotorPower(SWEEPER,0);
             UPDATES+=1;
         }
     }
     public void setTrayPosition(){
-        if(gamepad2.dpad_up){
-           targetPosition=LEFTLEVEL;
-        }else if(gamepad2.dpad_left){
-            targetPosition=TRAYLEFT;
-        }else if(gamepad2.dpad_right){
-           targetPosition=TRAYRIGHT;
-        }else if(gamepad2.dpad_down){
-            targetPosition=RIGHTLEVEL;
-        }
         currentPosition=tray.getPosition();
-        if(Math.abs(targetPosition-currentPosition)>TRAYMARGIN) {
-            if (targetPosition - currentPosition < 0) {
-                currentPosition = currentPosition - TRAYDELTA;
-                tray.setPosition(currentPosition);
-            }else if(targetPosition-currentPosition>0){
-                currentPosition=currentPosition+TRAYDELTA;
-                tray.setPosition(currentPosition);
+//        if(gamepad2.dpad_up){
+//           targetPosition=LEFTLEVEL;
+//        }else if(gamepad2.dpad_left){
+//            targetPosition=TRAYLEFT;
+//        }else if(gamepad2.dpad_right){
+//           targetPosition=TRAYRIGHT;
+//        }else if(gamepad2.dpad_down){
+//            targetPosition=RIGHTLEVEL;
+//        }
+//        currentPosition=tray.getPosition();
+//        if(Math.abs(targetPosition-currentPosition)>TRAYMARGIN) {
+//            if (targetPosition - currentPosition < 0) {
+//                currentPosition = currentPosition - TRAYDELTA;
+//                tray.setPosition(currentPosition);
+//            }else if(targetPosition-currentPosition>0){
+//                currentPosition=currentPosition+TRAYDELTA;
+//                tray.setPosition(currentPosition);
+//            }
+//        }
+        if(gamepad2.right_stick_x>.1){
+            if(currentPosition+.01<1) {
+                currentPosition=currentPosition + TRAYDELTA;
+            }
+        }else if(gamepad2.right_stick_x<-.1){
+            if(currentPosition-.01>0) {
+                 currentPosition=currentPosition - TRAYDELTA;
             }
         }
+        tray.setPosition(currentPosition);
     }
     public void setLeftPower(){
         if(gamepad1.left_stick_y>.05 && leftsweepMC.getMotorPower(LEFT)!=scaleInput(gamepad1.left_stick_y)){
@@ -174,9 +188,17 @@ public class TeleOpCommands extends OpMode {
             UPDATES+=1;
         }
         //left climbers down
-        if(gamepad1.dpad_left && Math.abs(climbersLeft.getPosition()-1)>.1){
+        if(gamepad1.dpad_left && Math.abs(climbersLeft.getPosition() - 1)>.1){
             climbersLeft.setPosition(1);
             UPDATES+=1;
+        }
+    }
+    public void setPlowPosition() {
+        if (gamepad1.a && plow.getPosition() != PLOWDOWN) {
+                plow.setPosition(PLOWDOWN);
+        }
+        if(gamepad1.y && plow.getPosition()!=PLOWUP){
+            plow.setPosition(PLOWUP);
         }
     }
     @Override
