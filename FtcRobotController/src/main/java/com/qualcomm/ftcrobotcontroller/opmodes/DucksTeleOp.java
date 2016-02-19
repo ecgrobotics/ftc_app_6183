@@ -41,8 +41,7 @@ public class DucksTeleOp extends TeleOpCommands {
     public void loop() {
 
 
-        setLeftPower();
-        setRightPower();
+        setDriveType();
         setWinchPower();
         setPivotPower();
         setClimbersPosition();

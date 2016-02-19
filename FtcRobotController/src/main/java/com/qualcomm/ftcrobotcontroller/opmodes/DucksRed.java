@@ -17,21 +17,80 @@ public class DucksRed extends AutonomousCommands{
         climbersRight=hardwareMap.servo.get("climbersRight");
         tray=hardwareMap.servo.get("tray");
         plow=hardwareMap.servo.get("plow");
-        leftsweepMC.setMotorChannelMode(LEFT, DcMotorController.RunMode.RUN_USING_ENCODERS);
-        rightpivotMC.setMotorChannelMode(RIGHT, DcMotorController.RunMode.RUN_USING_ENCODERS);
+        left.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
         gyro = hardwareMap.gyroSensor.get("gyro");
         gyro.calibrate();
         while (gyro.isCalibrating()) {
             telemetry.addData("lol", "lol");
         }
-        //turn left onto ramp
         waitForStart();
         plow.setPosition(PLOWDOWN);
-        encoderForward(60,.4);
-        encoderBackward(5,.4);
-        turnLeft(90,.3);
-        plow.setPosition(PLOWUP);
-        encoderForward(30,.3);
-        stop();
+        climbersLeft.setPosition(.3);
+        climbersRight.setPosition(1);
+        tray.setPosition(.5);
+
+        //drive to bucket
+        int target=left.getCurrentPosition()-Counts(130);
+        while(left.getCurrentPosition() >= target) {
+            right.setPower(.2);
+            left.setPower(-.3);
+            telemetry.addData("target",target);
+            telemetry.addData("Left Enc: ", left.getCurrentPosition());
+            waitOneFullHardwareCycle();
+        }
+        left.setPower(0);
+        right.setPower(0);
+
+        //turn towards bucket
+        sleep(500);
+        turnLeft(30,.2);
+        sleep(500);
+
+        //winch down in front of bucket
+        rightpivotMC.setMotorPower(WINCHPIVOT, -.2);
+        sleep(800);
+        rightpivotMC.setMotorPower(WINCHPIVOT, 0);
+
+        //winch out
+        winchwheelMC.setMotorPower(WINCH, .9);
+        winchwheelMC.setMotorPower(WINCHWHEEL, -1);
+        sleep(4000);
+        winchwheelMC.setMotorPower(WINCH, 0);
+        winchwheelMC.setMotorPower(WINCHWHEEL, 0);
+        sleep(500);
+
+        //winch down over bucket
+        rightpivotMC.setMotorPower(WINCHPIVOT, -.1);
+        sleep(500);
+        rightpivotMC.setMotorPower(WINCHPIVOT, 0);
+
+        //winch in over bucket, dump climbers
+        winchwheelMC.setMotorPower(WINCH, -.5);
+        winchwheelMC.setMotorPower(WINCHWHEEL, .5);
+        sleep(6000);
+        winchwheelMC.setMotorPower(WINCH, 0);
+        winchwheelMC.setMotorPower(WINCHWHEEL, 0);
+        sleep(500);
+
+        //winch out after dumping
+        winchwheelMC.setMotorPower(WINCH, 1);
+        winchwheelMC.setMotorPower(WINCHWHEEL, -1);
+        sleep(1000);
+        winchwheelMC.setMotorPower(WINCH, 0);
+        winchwheelMC.setMotorPower(WINCHWHEEL, 0);
+
+        //winch up after dumping
+        rightpivotMC.setMotorPower(WINCHPIVOT, .1);
+        sleep(300);
+        rightpivotMC.setMotorPower(WINCHPIVOT, 0);
+
+        //winch in after dumping
+        winchwheelMC.setMotorPower(WINCH, -1);
+        winchwheelMC.setMotorPower(WINCHWHEEL, 1);
+        sleep(2000);
+        winchwheelMC.setMotorPower(WINCH, 0);
+        winchwheelMC.setMotorPower(WINCHWHEEL, 0);
+
+
     }
 }

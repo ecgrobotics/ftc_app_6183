@@ -29,7 +29,7 @@ public class AutonomousCommands extends LinearOpMode{
     public static double PLOWUP=.8;
     public int ENCODER_CPR = 1120;
     public double GEAR_RATIO = 1;
-    public double WHEEL_DIAMETER = 3.3;
+    public double WHEEL_DIAMETER = 3.75;
     public double DISTANCE;
     public Servo climbersLeft;
     public Servo climbersRight;
@@ -37,7 +37,6 @@ public class AutonomousCommands extends LinearOpMode{
 
     public int Counts(double distance) {
         //Distance in inches
-        this.DISTANCE = distance;
         double CIRCUMFERENCE = Math.PI * WHEEL_DIAMETER;
         double ROTATIONS = distance/CIRCUMFERENCE;
         int COUNTS = (int) (ENCODER_CPR*ROTATIONS*GEAR_RATIO);
@@ -114,8 +113,8 @@ public class AutonomousCommands extends LinearOpMode{
         rightpivotMC.setMotorPower(RIGHT, 0);
     }
     public void encoderForward(int inches, double speed) {
-        int target=right.getCurrentPosition()+Counts(inches);
-        while(right.getCurrentPosition() <= target){
+        int target=left.getCurrentPosition()-Counts(inches);
+        while(left.getCurrentPosition() >= target){
             right.setPower(speed);
             left.setPower(-speed);
             telemetry.addData("Inches: ", DISTANCE + "Counts: " + Counts(0));
@@ -124,8 +123,8 @@ public class AutonomousCommands extends LinearOpMode{
         }
     }
     public void encoderBackward(int inches, double speed) {
-        int target=right.getCurrentPosition()-Counts(inches);
-        while(right.getCurrentPosition() >= target){
+        int target=left.getCurrentPosition()+Counts(inches);
+        while(left.getCurrentPosition() <= target){
             right.setPower(-speed);
             left.setPower(speed);
             telemetry.addData("Inches: ", DISTANCE + "Counts: " + Counts(0));
@@ -211,7 +210,6 @@ public class AutonomousCommands extends LinearOpMode{
         int targetHeading=startHeading+degrees;
         if(targetHeading>360){
             targetHeading=targetHeading-360;
-            // Mohamed was here
         }
         while(gyro.getHeading()<targetHeading-2 || gyro.getHeading()>targetHeading+2){
             if(leftsweepMC.getMotorPower(LEFT)!=-speed) {
