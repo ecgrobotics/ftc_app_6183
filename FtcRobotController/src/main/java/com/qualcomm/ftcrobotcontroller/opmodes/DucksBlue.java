@@ -30,7 +30,7 @@ public class DucksBlue extends AutonomousCommands{
       tray.setPosition(.5);
 
       //drive to bucket
-      int target=left.getCurrentPosition()-Counts(130);
+      int target=left.getCurrentPosition()-Counts(10);
       while(left.getCurrentPosition() >= target) {
           right.setPower(.2);
           left.setPower(-.3);
@@ -40,12 +40,28 @@ public class DucksBlue extends AutonomousCommands{
       }
       left.setPower(0);
       right.setPower(0);
-
       sleep(500);
-      turnRight(30, .2);
-      sleep(500);
+      turnRight(40,.4);
 
+      //drive to bucket
+      target=left.getCurrentPosition()-Counts(130);
+      while(left.getCurrentPosition() >= target) {
+          right.setPower(.15);
+          left.setPower(-.3);
+          telemetry.addData("target",target);
+          telemetry.addData("Left Enc: ", left.getCurrentPosition());
+          waitOneFullHardwareCycle();
+      }
+      left.setPower(0);
+      right.setPower(0);
+      turnRight(20,.4);
+//        //turn towards bucket
+//        sleep(500);
+//        turnLeft(40,.2);
+//        sleep(500);
+//
       //winch down in front of bucket
+      sleep(500);
       rightpivotMC.setMotorPower(WINCHPIVOT, -.2);
       sleep(800);
       rightpivotMC.setMotorPower(WINCHPIVOT, 0);
@@ -53,41 +69,17 @@ public class DucksBlue extends AutonomousCommands{
       //winch out
       winchwheelMC.setMotorPower(WINCH, .9);
       winchwheelMC.setMotorPower(WINCHWHEEL, -1);
-      sleep(4000);
+      sleep(3000);
       winchwheelMC.setMotorPower(WINCH, 0);
       winchwheelMC.setMotorPower(WINCHWHEEL, 0);
       sleep(500);
-
-      //winch down over bucket
-      rightpivotMC.setMotorPower(WINCHPIVOT, -.1);
-      sleep(500);
-      rightpivotMC.setMotorPower(WINCHPIVOT, 0);
 
       //winch in over bucket, dump climbers
       winchwheelMC.setMotorPower(WINCH, -.5);
       winchwheelMC.setMotorPower(WINCHWHEEL, .5);
-      sleep(6000);
-      winchwheelMC.setMotorPower(WINCH, 0);
-      winchwheelMC.setMotorPower(WINCHWHEEL, 0);
-      sleep(500);
-
-      //winch out after dumping
-      winchwheelMC.setMotorPower(WINCH, 1);
-      winchwheelMC.setMotorPower(WINCHWHEEL, -1);
-      sleep(1000);
+      sleep(3000);
       winchwheelMC.setMotorPower(WINCH, 0);
       winchwheelMC.setMotorPower(WINCHWHEEL, 0);
 
-      //winch up after dumping
-      rightpivotMC.setMotorPower(WINCHPIVOT, .1);
-      sleep(300);
-      rightpivotMC.setMotorPower(WINCHPIVOT, 0);
-
-      //winch in after dumping
-      winchwheelMC.setMotorPower(WINCH, -1);
-      winchwheelMC.setMotorPower(WINCHWHEEL, 1);
-      sleep(2000);
-      winchwheelMC.setMotorPower(WINCH, 0);
-      winchwheelMC.setMotorPower(WINCHWHEEL, 0);
   }
 }

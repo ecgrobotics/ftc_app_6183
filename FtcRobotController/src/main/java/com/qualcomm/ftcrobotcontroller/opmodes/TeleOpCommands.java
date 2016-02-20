@@ -42,7 +42,7 @@ public class TeleOpCommands extends OpMode {
     public static double PLOWUP=.8;
     public long LEFTUPDATE=0;
     public long RIGHTUPDATE=0;
-    public boolean driveType = false;
+    public boolean driveType = true;
 
     //Gamepad1: DPAD is climbers, Joysticks are driving
 
@@ -86,107 +86,87 @@ public class TeleOpCommands extends OpMode {
             UPDATES+=1;
         }
     }
+    public void setTankDrive(){
+
+        if (Math.abs(gamepad1.left_stick_y) > .05 && leftsweepMC.getMotorPower(LEFT) != scaleInput(gamepad1.left_stick_y)) {
+            leftsweepMC.setMotorPower(LEFT, scaleInput(gamepad1.left_stick_y));
+            UPDATES += 1;
+            LEFTUPDATE = System.currentTimeMillis();
+        }
+        else if (Math.abs(gamepad1.left_stick_y) < .05) {
+            leftsweepMC.setMotorPower(LEFT, 0);
+        }
+        if (Math.abs(gamepad1.right_stick_y) > 0.05 && rightpivotMC.getMotorPower(RIGHT) != -scaleInput(gamepad1.right_stick_y)) {
+            rightpivotMC.setMotorPower(RIGHT, -scaleInput(gamepad1.right_stick_y));
+            UPDATES += 1;
+            RIGHTUPDATE = System.currentTimeMillis();
+        }  else if (Math.abs(gamepad1.right_stick_y) < .05) {
+            rightpivotMC.setMotorPower(RIGHT, 0);
+        }
+    }
+    public void setHyperDrive(){
+        if(gamepad1.left_stick_y > .05 && rightpivotMC.getMotorPower(RIGHT) != -scaleInput(gamepad1.left_stick_y)){
+            double motorpower = -scaleInput(gamepad1.left_stick_y);
+            rightpivotMC.setMotorPower(RIGHT, -(motorpower));
+            UPDATES += 1;
+        }
+        else if(gamepad1.left_stick_y < -.05 && rightpivotMC.getMotorPower(RIGHT) != -scaleInput(gamepad1.left_stick_y)){
+            double motorpower = -scaleInput(gamepad1.left_stick_y);
+            rightpivotMC.setMotorPower(RIGHT, -(motorpower));
+            UPDATES += 1;
+        }
+        else if(Math.abs(gamepad1.left_stick_y) <.05){
+            rightpivotMC.setMotorPower(RIGHT, 0);
+        }
+        if (Math.abs(gamepad1.left_stick_y) > .05 && leftsweepMC.getMotorPower(LEFT) != scaleInput(gamepad1.left_stick_y)) {
+            double motorpower = scaleInput(gamepad1.left_stick_y);
+            leftsweepMC.setMotorPower(LEFT, motorpower);
+            UPDATES += 1;
+
+        } else if (Math.abs(gamepad1.left_stick_y) < .05) {
+            leftsweepMC.setMotorPower(LEFT, 0);
+        }
+
+        if (gamepad1.right_stick_x > 0.05 && rightpivotMC.getMotorPower(RIGHT) != -scaleInput(gamepad1.right_stick_x)&& leftsweepMC.getMotorPower(LEFT) != scaleInput(gamepad1.right_stick_x)) {
+            double motorpower = scaleInput(gamepad1.right_stick_x);
+            rightpivotMC.setMotorPower(RIGHT, scaleInput(gamepad1.right_stick_x));
+            leftsweepMC.setMotorPower(LEFT, scaleInput(gamepad1.right_stick_x));
+            UPDATES += 1;
+
+        } else if (gamepad1.right_stick_x < -.05 && rightpivotMC.getMotorPower(RIGHT) != -scaleInput(gamepad1.right_stick_x)&& leftsweepMC.getMotorPower(LEFT) != scaleInput(gamepad1.right_stick_x)) {
+            rightpivotMC.setMotorPower(RIGHT, -scaleInput(gamepad1.right_stick_x));
+            leftsweepMC.setMotorPower(LEFT, -scaleInput(gamepad1.right_stick_x));
+            UPDATES += 1;
+        } else if (Math.abs(gamepad1.right_stick_x) < .05) {
+            rightpivotMC.setMotorPower(RIGHT, 0);
+        }
+    }
     public void setTrayPosition(){
         currentPosition=tray.getPosition();
-//        if(gamepad2.dpad_up){
-//           targetPosition=LEFTLEVEL;
-//        }else if(gamepad2.dpad_left){
-//            targetPosition=TRAYLEFT;
-//        }else if(gamepad2.dpad_right){
-//           targetPosition=TRAYRIGHT;
-//        }else if(gamepad2.dpad_down){
-//            targetPosition=RIGHTLEVEL;
-//        }
-//        currentPosition=tray.getPosition();
-//        if(Math.abs(targetPosition-currentPosition)>TRAYMARGIN) {
-//            if (targetPosition - currentPosition < 0) {
-//                currentPosition = currentPosition - TRAYDELTA;
-//                tray.setPosition(currentPosition);
-//            }else if(targetPosition-currentPosition>0){
-//                currentPosition=currentPosition+TRAYDELTA;
-//                tray.setPosition(currentPosition);
-//            }
-//        }
         if(gamepad2.right_stick_x>.1){
             if(currentPosition+.01<1) {
                 currentPosition=currentPosition + TRAYDELTA;
             }
         }else if(gamepad2.right_stick_x<-.1){
             if(currentPosition-.01>0) {
-                 currentPosition=currentPosition - TRAYDELTA;
+                 currentPosition=currentPosition - TRAYDELTA/2;
             }
         }
         tray.setPosition(currentPosition);
     }
     public void setDriveType(){
-
         if(gamepad1.x){
             driveType = true;
         }
-        if(gamepad1.b){
-            driveType = true;//change to false to activate hyperdrive
+        else if(gamepad1.b){
+            driveType = false;
+            }
+        if(driveType==true){
+            setTankDrive();
         }
-
-        if(driveType == true) {
-            if (Math.abs(gamepad1.left_stick_y) > .05 && leftsweepMC.getMotorPower(LEFT) != scaleInput(gamepad1.left_stick_y)) {
-                leftsweepMC.setMotorPower(LEFT, scaleInput(gamepad1.left_stick_y));
-                UPDATES += 1;
-                LEFTUPDATE = System.currentTimeMillis();
-            }
-            else if (Math.abs(gamepad1.left_stick_y) < .05) {
-                leftsweepMC.setMotorPower(LEFT, 0);
-            }
-
-
-            if (Math.abs(gamepad1.right_stick_y) > 0.05 && rightpivotMC.getMotorPower(RIGHT) != -scaleInput(gamepad1.right_stick_y)) {
-                rightpivotMC.setMotorPower(RIGHT, -scaleInput(gamepad1.right_stick_y));
-                UPDATES += 1;
-                RIGHTUPDATE = System.currentTimeMillis();
-            }  else if (Math.abs(gamepad1.right_stick_y) < .05) {
-                rightpivotMC.setMotorPower(RIGHT, 0);
-            }
+        else if(driveType==false){
+            setHyperDrive();
         }
-        else if(driveType == false){
-            //HYPER DRIVE STUFF HERE
-            //left stick moves both motors simultaneously
-            //right stick pivots
-            if(gamepad1.left_stick_y > .05 && rightpivotMC.getMotorPower(RIGHT) != -scaleInput(gamepad1.left_stick_y)){
-                double motorpower = -scaleInput(gamepad1.left_stick_y);
-                rightpivotMC.setMotorPower(RIGHT, -(motorpower));
-                UPDATES += 1;
-            }
-            else if(gamepad1.left_stick_y < -.05 && rightpivotMC.getMotorPower(RIGHT) != -scaleInput(gamepad1.left_stick_y)){
-                double motorpower = -scaleInput(gamepad1.left_stick_y);
-                rightpivotMC.setMotorPower(RIGHT, -(motorpower));
-                UPDATES += 1;
-            }
-            else if(Math.abs(gamepad1.left_stick_y) <.05){
-                rightpivotMC.setMotorPower(RIGHT, 0);
-            }
-            if (Math.abs(gamepad1.left_stick_y) > .05 && leftsweepMC.getMotorPower(LEFT) != scaleInput(gamepad1.left_stick_y)) {
-                double motorpower = scaleInput(gamepad1.left_stick_y);
-                leftsweepMC.setMotorPower(LEFT, motorpower);
-                UPDATES += 1;
-
-            } else if (Math.abs(gamepad1.left_stick_y) < .05) {
-                leftsweepMC.setMotorPower(LEFT, 0);
-            }
-
-            if (gamepad1.right_stick_x > 0.05 && rightpivotMC.getMotorPower(RIGHT) != -scaleInput(gamepad1.right_stick_x)&& leftsweepMC.getMotorPower(LEFT) != scaleInput(gamepad1.right_stick_x)) {
-               double motorpower = scaleInput(gamepad1.right_stick_x);
-                rightpivotMC.setMotorPower(RIGHT, scaleInput(gamepad1.right_stick_x));
-                leftsweepMC.setMotorPower(LEFT, scaleInput(gamepad1.right_stick_x));
-                UPDATES += 1;
-
-            } else if (gamepad1.right_stick_x < -.05 && rightpivotMC.getMotorPower(RIGHT) != -scaleInput(gamepad1.right_stick_x)&& leftsweepMC.getMotorPower(LEFT) != scaleInput(gamepad1.right_stick_x)) {
-                rightpivotMC.setMotorPower(RIGHT, -scaleInput(gamepad1.right_stick_x));
-                leftsweepMC.setMotorPower(LEFT, -scaleInput(gamepad1.right_stick_x));
-                UPDATES += 1;
-            } else if (Math.abs(gamepad1.right_stick_x) < .05) {
-                rightpivotMC.setMotorPower(RIGHT, 0);
-            }
-        }
-
     }
     public void setWinchPower(){
         if(gamepad2.a && winchwheelMC.getMotorPower(WINCH)!=1){
