@@ -33,6 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:opencv="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".FtcRobotControllerActivity"
@@ -82,6 +83,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       android:layout_centerHorizontal="true"
       android:layout_margin="10dp"/>
 
+
   </RelativeLayout>
   <!-- end of black bar -->
 
@@ -97,6 +99,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin" >
+    <org.opencv.android.JavaCameraView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/camerapreview"
+        android:layout_below="@+id/textOpMode"
+        opencv:camera_id="any"
+        opencv:show_fps="true"
+        />
 
     <TextView
       android:id="@+id/textWifiDirectStatus"

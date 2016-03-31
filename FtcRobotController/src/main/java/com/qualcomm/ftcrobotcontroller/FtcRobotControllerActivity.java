@@ -45,6 +45,7 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -70,6 +71,11 @@ import com.qualcomm.robotcore.util.ImmersiveMode;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.wifi.WifiDirectAssistant;
 
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.CameraBridgeViewBase;
+import org.opencv.android.LoaderCallbackInterface;
+import org.opencv.android.OpenCVLoader;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.Serializable;
@@ -77,7 +83,6 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class FtcRobotControllerActivity extends Activity {
-
   private static final int REQUEST_CONFIG_WIFI_CHANNEL = 1;
   private static final boolean USE_DEVICE_EMULATION = false;
   private static final int NUM_GAMEPADS = 2;
@@ -98,6 +103,7 @@ public class FtcRobotControllerActivity extends Activity {
   protected TextView[] textGamepad = new TextView[NUM_GAMEPADS];
   protected TextView textOpMode;
   protected TextView textErrorMessage;
+  public static CameraBridgeViewBase mOpenCvCameraView;
   protected ImmersiveMode immersion;
 
   protected UpdateUI updateUI;
@@ -115,6 +121,12 @@ public class FtcRobotControllerActivity extends Activity {
       requestRobotRestart();
     }
 
+  }
+
+  public void onDestroy() {
+    super.onDestroy();
+    if (mOpenCvCameraView != null)
+      mOpenCvCameraView.disableView();
   }
 
   protected ServiceConnection connection = new ServiceConnection() {
@@ -165,9 +177,30 @@ public class FtcRobotControllerActivity extends Activity {
     }
   }
 
+  public BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
+    @Override
+    public void onManagerConnected(int status) {
+      switch (status) {
+        case LoaderCallbackInterface.SUCCESS:
+        {
+//          mOpenCvCameraView.enableView();
+        } break;
+        default:
+        {
+          super.onManagerConnected(status);
+        } break;
+      }
+    }
+  };
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    if (!OpenCVLoader.initDebug()) {
+      Log.e(this.getClass().getSimpleName(), "  OpenCVLoader.initDebug(), not working.");
+    } else {
+      Log.d(this.getClass().getSimpleName(), "  OpenCVLoader.initDebug(), working.");
+    }
 
     receivedUsbAttachmentNotifications = new ConcurrentLinkedQueue<UsbDevice>();
     eventLoop = null;
@@ -192,6 +225,7 @@ public class FtcRobotControllerActivity extends Activity {
     textErrorMessage = (TextView) findViewById(R.id.textErrorMessage);
     textGamepad[0] = (TextView) findViewById(R.id.textGamepad1);
     textGamepad[1] = (TextView) findViewById(R.id.textGamepad2);
+    mOpenCvCameraView=(CameraBridgeViewBase)findViewById(R.id.camerapreview);
     immersion = new ImmersiveMode(getWindow().getDecorView());
     dimmer = new Dimmer(this);
     dimmer.longBright();
@@ -213,7 +247,6 @@ public class FtcRobotControllerActivity extends Activity {
 
     if (USE_DEVICE_EMULATION) { HardwareFactory.enableDeviceEmulation(); }
   }
-
   @Override
   protected void onStart() {
     super.onStart();
@@ -242,11 +275,14 @@ public class FtcRobotControllerActivity extends Activity {
   @Override
   protected void onResume() {
     super.onResume();
+    OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_11, context, mLoaderCallback);
   }
 
   @Override
   public void onPause() {
     super.onPause();
+    if (mOpenCvCameraView != null)
+      mOpenCvCameraView.disableView();
   }
 
   @Override

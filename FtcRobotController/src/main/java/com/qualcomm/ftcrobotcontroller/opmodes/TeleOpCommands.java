@@ -159,7 +159,7 @@ public class TeleOpCommands extends OpMode {
             driveType = true;
         }
         else if(gamepad1.b){
-            driveType = false;
+            driveType = true;
             }
         if(driveType==true){
             setTankDrive();
